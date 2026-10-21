@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>AutoPrime</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{--bg:#0a0b0a;--surface:#141613;--raised:#1b1e19;--line:#2a2e27;--text:#f4f6ef;--muted:#92998b;--lime:#c8ff32;--danger:#ff5964;--r:18px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background:repeating-linear-gradient(115deg,transparent 0 18px,#20231f 19px 20px)}
+    button,input,textarea,select{font:inherit}.app{position:relative;max-width:520px;margin:auto;padding:20px 16px calc(96px + env(safe-area-inset-bottom))}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.brand{font-weight:900;font-size:24px;letter-spacing:-1px}.brand b{color:var(--lime)}.avatar{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:grid;place-items:center}
+    .hero{position:relative;overflow:hidden;border:1px solid #30362a;border-radius:24px;padding:24px;background:radial-gradient(circle at 85% 15%,#334214 0,transparent 42%),linear-gradient(145deg,#181b16,#10110f);margin-bottom:28px}
+    .eyebrow{color:var(--lime);font-weight:800;font-size:12px;letter-spacing:1.6px}.hero h1{font-size:32px;line-height:1.02;letter-spacing:-1.3px;margin:10px 0}.hero p{color:var(--muted);max-width:260px;margin:0}
+    .wheel{position:absolute;right:-20px;bottom:-36px;width:150px;height:150px;border:17px solid #252b22;border-radius:50%;box-shadow:inset 0 0 0 3px #46503c,0 10px 50px #000}.wheel:before,.wheel:after{content:"";position:absolute;left:50%;top:50%;width:83px;height:13px;background:#3a4235;transform-origin:left center}.wheel:before{transform:rotate(28deg)}.wheel:after{transform:rotate(152deg)}.hub{position:absolute;inset:44px;border:7px solid #3d4637;border-radius:50%;background:#12140f;z-index:2}
+    .section-title{display:flex;justify-content:space-between;align-items:end;margin:0 2px 14px}.section-title h2{font-size:21px;margin:0}.section-title span{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{min-width:0;border:1px solid var(--line);background:linear-gradient(155deg,var(--raised),var(--surface));border-radius:var(--r);padding:14px;cursor:pointer}.art{height:124px;border-radius:13px;background:radial-gradient(circle at 50% 50%,#090a09 0 19%,#3a4035 20% 24%,transparent 25%),radial-gradient(circle at 50% 50%,transparent 0 36%,#2e332c 37% 49%,#111 50% 55%,transparent 56%),linear-gradient(135deg,#20231e,#111);margin-bottom:13px;position:relative;overflow:hidden}.art:after{content:"";position:absolute;width:55px;height:8px;background:var(--accent);left:50%;top:18%;transform:translateX(-50%);border-radius:5px;box-shadow:0 72px 30px color-mix(in srgb,var(--accent) 35%,transparent)}.tag{font-size:11px;color:var(--accent);font-weight:800}.card h3{font-size:15px;margin:5px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.price{font-weight:800;font-size:17px}
+    .empty{color:var(--muted);text-align:center;padding:44px 16px;border:1px dashed var(--line);border-radius:var(--r)}.order{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:16px;margin-bottom:12px}.order-top{display:flex;justify-content:space-between;gap:12px}.status{color:var(--lime);font-size:12px;font-weight:800}.sub{color:var(--muted);font-size:13px}
+    nav{position:fixed;z-index:10;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 24px),496px);display:grid;grid-template-columns:repeat(3,1fr);background:rgba(20,22,19,.95);border:1px solid var(--line);border-radius:18px;padding:7px;backdrop-filter:blur(16px)}nav button{height:52px;border:0;background:transparent;color:var(--muted);border-radius:12px;font-size:12px;font-weight:700}nav button.active{background:#262c20;color:var(--lime)}
+    .page{display:none}.page.active{display:block}.panel{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:18px;margin-bottom:14px}.profile-name{font-size:24px;font-weight:900;margin:4px 0}.manager{display:block;text-align:center;text-decoration:none;color:#0a0b0a;background:var(--lime);padding:14px;border-radius:13px;font-weight:900;margin-top:16px}
+    .modal{position:fixed;z-index:20;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end}.modal.open{display:flex}.sheet{width:min(100%,520px);max-height:91vh;overflow:auto;margin:auto;background:#151714;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}.close{float:right;border:0;background:#292d27;color:white;width:44px;height:44px;border-radius:13px}.sheet h2{font-size:25px;margin:8px 0}.sheet p{color:var(--muted)}label{display:block;color:var(--muted);font-size:13px;margin:14px 0 6px}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:12px;background:#0f100e;color:white;padding:13px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--lime)}.primary{width:100%;border:0;border-radius:13px;background:var(--lime);color:#0b0d09;font-weight:900;padding:14px;margin-top:16px}.admin-only{display:none}.admin-only.show{display:block}.admin-row{display:flex;gap:8px}.admin-row select{flex:1}.small{width:auto;margin:0;padding:10px 12px}
+    .toast{position:fixed;z-index:30;left:50%;top:18px;transform:translate(-50%,-140%);opacity:0;transition:.25s;background:#eefbd0;color:#13160f;font-weight:800;padding:12px 18px;border-radius:12px}.toast.show{transform:translate(-50%,0);opacity:1}
+    @media(max-width:420px){.hero p{max-width:195px}.wheel{opacity:.62}}
+    @media(max-width:360px){.grid{grid-template-columns:1fr}.hero h1{font-size:29px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<main class="app">
+  <header><div class="brand">AUTO<b>PRIME</b></div><div class="avatar">AP</div></header>
+  <section id="catalog" class="page active">
+    <div class="hero"><div class="eyebrow">DRIVE YOUR STYLE</div><h1>Рули с<br>характером.</h1><p>Подбор, заказ и связь с менеджером внутри Telegram.</p><div class="wheel"><i class="hub"></i></div></div>
+    <div class="section-title"><h2>Каталог</h2><span id="count"></span></div><div class="grid" id="products"></div>
+  </section>
+  <section id="orders" class="page"><div class="section-title"><h2 id="ordersTitle">Мои заказы</h2><span>Статусы</span></div><div id="ordersList"></div></section>
+  <section id="profile" class="page"><div class="panel"><div class="eyebrow">ПРОФИЛЬ</div><div class="profile-name" id="name">Покупатель</div><div class="sub" id="username"></div><a class="manager" id="manager" target="_blank">Написать менеджеру</a></div>
+    <div class="panel admin-only" id="admin"><div class="eyebrow">АДМИН-ПАНЕЛЬ</div><h2>Добавить товар</h2><label>Название</label><input id="aName"><label>Цена, ₽</label><input id="aPrice" type="number"><label>Категория</label><input id="aCategory" value="Рули"><label>Описание</label><textarea id="aDescription"></textarea><button class="primary" onclick="addProduct()">Добавить</button></div>
+  </section>
+</main>
+<nav><button class="active" data-page="catalog">Каталог</button><button data-page="orders">Заказы</button><button data-page="profile">Профиль</button></nav>
+<div class="modal" id="modal"><div class="sheet"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+<script>
+const tg=window.Telegram?.WebApp; tg?.ready(); tg?.expand();
+const initData=tg?.initData||""; let me=null,products=[];
+const api=async(path,opt={})=>{opt.headers={...(opt.headers||{}),"X-Telegram-Init-Data":initData,"Content-Type":"application/json"};const r=await fetch(path,opt);const j=await r.json();if(!r.ok)throw Error(j.error||"Ошибка");return j};
+const money=n=>new Intl.NumberFormat("ru-RU").format(n)+" ₽";
+function toast(s){const e=document.querySelector("#toast");e.textContent=s;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2200)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function load(){
+ try{
+  [me,products]=await Promise.all([api("/api/me"),api("/api/products")]);
+  name.textContent=me.name;username.textContent=me.username?"@"+me.username:"Telegram ID "+me.id;manager.href="https://t.me/"+me.manager;
+  if(me.is_admin){admin.classList.add("show");ordersTitle.textContent="Все заказы"}
+  renderProducts();loadOrders();
+ }catch(e){document.querySelector(".app").innerHTML='<div class="empty">'+escapeHtml(e.message)+'<br><br>Откройте приложение кнопкой из бота.</div>'}
+}
+function renderProducts(){count.textContent=products.filter(x=>x.active).length+" модели";document.querySelector("#products").innerHTML=products.map(p=>`<article class="card" onclick="openProduct(${p.id})" style="--accent:${p.accent}"><div class="art"></div><div class="tag">${escapeHtml(p.category)}${p.active?"":" · скрыт"}</div><h3>${escapeHtml(p.name)}</h3><div class="price">${money(p.price)}</div></article>`).join("")}
+function openProduct(id){const p=products.find(x=>x.id===id);modalBody.innerHTML=`<div class="art" style="--accent:${p.accent};height:190px"></div><div class="tag">${escapeHtml(p.category)}</div><h2>${escapeHtml(p.name)}</h2><div class="price">${money(p.price)}</div><p>${escapeHtml(p.description)}</p><label>Телефон</label><input id="phone" inputmode="tel" placeholder="+7 999 000-00-00"><label>Комментарий</label><textarea id="comment" placeholder="Марка авто, пожелания"></textarea><button class="primary" onclick="order(${p.id})">Оформить заказ</button>${me.is_admin?`<button class="primary" style="background:#30352c;color:white" onclick="toggleProduct(${p.id})">${p.active?"Скрыть товар":"Показать товар"}</button>`:""}`;modal.classList.add("open")}
+function closeModal(){modal.classList.remove("open")}
+async function order(id){try{const r=await api("/api/orders",{method:"POST",body:JSON.stringify({product_id:id,phone:phone.value,comment:comment.value})});closeModal();toast("Заказ №"+r.order_id+" создан");loadOrders()}catch(e){toast(e.message)}}
+async function loadOrders(){try{const data=await api("/api/orders");ordersList.innerHTML=data.length?data.map(o=>`<div class="order"><div class="order-top"><b>№${o.id} · ${escapeHtml(o.product_name)}</b><span class="status">${escapeHtml(o.status)}</span></div><div class="sub">${money(o.price)} · ${escapeHtml(o.phone)}</div>${me?.is_admin?`<div class="admin-row" style="margin-top:12px"><select id="s${o.id}">${["Новый","Подтверждён","В работе","Готов","Отменён"].map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select><button class="primary small" onclick="setStatus(${o.id})">OK</button></div>`:""}</div>`).join(""):'<div class="empty">Заказов пока нет</div>'}catch(e){}}
+async function setStatus(id){try{await api("/api/admin/orders/"+id,{method:"PATCH",body:JSON.stringify({status:document.querySelector("#s"+id).value})});toast("Статус обновлён");loadOrders()}catch(e){toast(e.message)}}
+async function addProduct(){try{await api("/api/admin/products",{method:"POST",body:JSON.stringify({name:aName.value,price:aPrice.value,category:aCategory.value,description:aDescription.value})});toast("Товар добавлен");products=await api("/api/products");renderProducts()}catch(e){toast(e.message)}}
+async function toggleProduct(id){try{await api("/api/admin/products/"+id+"/toggle",{method:"PATCH"});products=await api("/api/products");closeModal();renderProducts();toast("Готово")}catch(e){toast(e.message)}}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button,.page").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelector("#"+b.dataset.page).classList.add("active");if(b.dataset.page==="orders")loadOrders()});
+modal.onclick=e=>{if(e.target===modal)closeModal()};load();
+</script>
+</body>
+</html>
